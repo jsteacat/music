@@ -57,26 +57,42 @@
           </ul>
 
           <!-- Login Form -->
-          <form v-if="tab === 'login'">
+          <VeeForm
+              v-if="tab === 'login'"
+              :validation-schema="loginSchema"
+              @submit="login"
+          >
             <!-- Email -->
             <div class="mb-3">
               <label class="inline-block mb-2">Email</label>
-              <input
-                  type="email"
-                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
-                  duration-500 focus:outline-none focus:border-black rounded"
-                  placeholder="Enter Email"
-              />
+              <VeeField name="email" :bails="false" #default="{ field, errors }">
+                <input
+                    type="email"
+                    class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300
+                    transition duration-500 focus:outline-none focus:border-black rounded"
+                    placeholder="Enter Email"
+                    v-bind="field"
+                >
+                <div class="text-red-600 text-xs" v-for="(error, index) in errors" :key="index">
+                  {{error}}
+                </div>
+              </VeeField>
             </div>
             <!-- Password -->
             <div class="mb-3">
               <label class="inline-block mb-2">Password</label>
-              <input
-                  type="password"
-                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
-                  duration-500 focus:outline-none focus:border-black rounded"
-                  placeholder="Password"
-              />
+              <VeeField name="password" :bails="false" #default="{ field, errors }">
+                <input
+                    type="password"
+                    class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300
+                    transition duration-500 focus:outline-none focus:border-black rounded"
+                    placeholder="Password"
+                    v-bind="field"
+                >
+                <div class="text-red-600 text-xs" v-for="(error, index) in errors" :key="index">
+                  {{error}}
+                </div>
+              </VeeField>
             </div>
             <button
                 type="submit"
@@ -85,7 +101,7 @@
             >
               Submit
             </button>
-          </form>
+          </VeeForm>
 
           <!-- Registration Alert -->
           <div
@@ -235,11 +251,15 @@ export default {
       schema: {
         name: 'required|min:3|max:100|alpha_spaces',
         email: 'required|min:3|max:100|email',
-        age: 'required|min_value:18|max_value:100|',
-        password: 'required|min:3|max:100',
+        age: 'required|min_value:18|max_value:120|',
+        password: 'required|min:3|max:32',
         confirm_password: 'passwords_mismatch:@password',
         country: 'required|country_excluded:Excluded country',
         tos: 'tos',
+      },
+      loginSchema: {
+        email: 'required|email',
+        password: 'required|min:3|max:32',
       },
       usedData: {
         country: 'USA',
@@ -262,6 +282,9 @@ export default {
           this.toggleAuthModal();
         }, 2000);
       }
+    },
+    login(formData) {
+      console.log(formData);
     },
   },
 };
