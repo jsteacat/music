@@ -87,7 +87,7 @@
             </button>
           </form>
           <!-- Registration Form -->
-          <VeeForm v-if="tab === 'register'" :validation-schema="schema">
+          <VeeForm v-if="tab === 'register'" :validation-schema="schema" @submit="register">
             <!-- Name -->
             <div class="mb-3">
               <label class="inline-block mb-2">Name</label>
@@ -226,6 +226,11 @@ export default {
   },
   methods: {
     ...mapMutations(['toggleAuthModal']),
+    register(formData) {
+      if (formData) {
+        this.toggleAuthModal();
+      }
+    },
   },
 };
 </script>
