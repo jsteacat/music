@@ -87,56 +87,75 @@
             </button>
           </form>
           <!-- Registration Form -->
-          <VeeForm v-if="tab === 'register'">
+          <VeeForm v-if="tab === 'register'" :validation-schema="schema">
             <!-- Name -->
             <div class="mb-3">
               <label class="inline-block mb-2">Name</label>
               <VeeField
-                  name="name"
                   type="text"
+                  name="name"
                   class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
                   duration-500 focus:outline-none focus:border-black rounded"
                   placeholder="Enter Name"
               />
+              <ErrorMessage name="name">
+                <p class="text-red-600">Name is not valid!</p>
+              </ErrorMessage>
             </div>
             <!-- Email -->
             <div class="mb-3">
               <label class="inline-block mb-2">Email</label>
-              <input
+              <VeeField
                   type="email"
+                  name="email"
                   class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
                   duration-500 focus:outline-none focus:border-black rounded"
                   placeholder="Enter Email"
               />
+              <ErrorMessage name="email">
+                <p class="text-red-600">Email is not valid!</p>
+              </ErrorMessage>
             </div>
             <!-- Age -->
             <div class="mb-3">
               <label class="inline-block mb-2">Age</label>
-              <input
+              <VeeField
                   type="number"
+                  name="age"
                   class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
                   duration-500 focus:outline-none focus:border-black rounded"
               />
+              <ErrorMessage name="age">
+                <p class="text-red-600">Age is not valid!</p>
+              </ErrorMessage>
             </div>
             <!-- Password -->
             <div class="mb-3">
               <label class="inline-block mb-2">Password</label>
-              <input
+              <VeeField
                   type="password"
+                  name="password"
                   class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
                   duration-500 focus:outline-none focus:border-black rounded"
                   placeholder="Password"
               />
+              <ErrorMessage name="password">
+                <p class="text-red-600">Password is not valid!</p>
+              </ErrorMessage>
             </div>
             <!-- Confirm Password -->
             <div class="mb-3">
               <label class="inline-block mb-2">Confirm Password</label>
-              <input
+              <VeeField
                   type="password"
+                  name="confirm_password"
                   class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
                   duration-500 focus:outline-none focus:border-black rounded"
                   placeholder="Confirm Password"
               />
+              <ErrorMessage name="confirm_password">
+                <p class="text-red-600">Passwords is not equals!</p>
+              </ErrorMessage>
             </div>
             <!-- Country -->
             <div class="mb-3">
@@ -180,6 +199,15 @@ export default {
   data() {
     return {
       tab: 'login',
+      schema: {
+        name: 'required|min:3|max:100|alpha_spaces',
+        email: 'required|min:3|max:100|email',
+        age: 'required|min_value:18|max_value:100|',
+        password: 'required|min:3|max:100',
+        confirmPassword: 'confirmed:@password',
+        country: '',
+        tos: '',
+      },
     };
   },
   computed: {
