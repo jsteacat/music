@@ -160,22 +160,33 @@
             <!-- Country -->
             <div class="mb-3">
               <label class="inline-block mb-2">Country</label>
-              <select
+              <VeeField
+                  as="select"
+                  name="country"
                   class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
                   duration-500 focus:outline-none focus:border-black rounded"
               >
                 <option value="USA">USA</option>
                 <option value="Mexico">Mexico</option>
                 <option value="Germany">Germany</option>
-              </select>
+                <option value="Excluded country">Excluded country</option>
+              </VeeField>
+              <ErrorMessage name="country">
+                <p class="text-red-600">Country is not valid!</p>
+              </ErrorMessage>
             </div>
             <!-- TOS -->
             <div class="mb-3 pl-6">
-              <input
+              <VeeField
                   type="checkbox"
+                  name="tos"
+                  value="1"
                   class="w-4 h-4 float-left -ml-6 mt-1 rounded"
               />
               <label class="inline-block">Accept terms of service</label>
+              <ErrorMessage name="tos" class="block">
+                <p class="text-red-600">Accept terms of service!</p>
+              </ErrorMessage>
             </div>
             <button
                 type="submit"
@@ -204,9 +215,9 @@ export default {
         email: 'required|min:3|max:100|email',
         age: 'required|min_value:18|max_value:100|',
         password: 'required|min:3|max:100',
-        confirmPassword: 'confirmed:@password',
-        country: '',
-        tos: '',
+        confirm_password: 'confirmed:@password',
+        country: 'required|excluded:Excluded country',
+        tos: 'required',
       },
     };
   },
