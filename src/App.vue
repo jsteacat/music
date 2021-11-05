@@ -299,15 +299,19 @@
     </div>
   </div>
 
-  <AuthModal />
+  <AuthModal v-if="authModalShow"/>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import AppHeader from './components/Header.vue';
 import AuthModal from './components/AuthModal.vue';
 
 export default {
   name: 'App',
+  computed: {
+    ...mapState(['authModalShow']),
+  },
   components: {
     AppHeader,
     AuthModal,

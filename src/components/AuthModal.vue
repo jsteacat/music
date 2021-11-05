@@ -1,6 +1,6 @@
 <template>
   <!-- Auth Modal -->
-  <div :class="['fixed z-10 inset-0 overflow-y-auto', { hidden: !authModalShow }]" id="modal">
+  <div id="modal" class="fixed z-10 inset-0 overflow-y-auto">
     <div
       class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
     >
@@ -86,94 +86,119 @@
               Submit
             </button>
           </form>
+
+          <!-- Registration Alert -->
+          <div
+              v-if="showRegAlert"
+              :class="regAlertVariant"
+              class="text-white text-center text-bold p-5 mb-4"
+          >
+            {{ regAlertMessage }}
+          </div>
+
           <!-- Registration Form -->
-          <VeeForm v-if="tab === 'register'" :validation-schema="schema" @submit="register">
+          <VeeForm
+              v-if="tab === 'register'"
+              :validation-schema="schema"
+              :initial-values="usedData"
+              @submit="register"
+          >
             <!-- Name -->
             <div class="mb-3">
               <label class="inline-block mb-2">Name</label>
-              <VeeField
-                  type="text"
-                  name="name"
-                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
-                  duration-500 focus:outline-none focus:border-black rounded"
-                  placeholder="Enter Name"
-              />
-              <ErrorMessage name="name">
-                <p class="text-red-600">Name is not valid!</p>
-              </ErrorMessage>
+              <VeeField name="name" :bails="false" #default="{ field, errors }">
+                <input
+                    type="text"
+                    class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300
+                    transition duration-500 focus:outline-none focus:border-black rounded"
+                    placeholder="Enter Name"
+                    v-bind="field"
+                >
+                <div class="text-red-600 text-xs" v-for="(error, index) in errors" :key="index">
+                  {{error}}
+                </div>
+              </VeeField>
             </div>
             <!-- Email -->
             <div class="mb-3">
               <label class="inline-block mb-2">Email</label>
-              <VeeField
-                  type="email"
-                  name="email"
-                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
-                  duration-500 focus:outline-none focus:border-black rounded"
-                  placeholder="Enter Email"
-              />
-              <ErrorMessage name="email">
-                <p class="text-red-600">Email is not valid!</p>
-              </ErrorMessage>
+              <VeeField name="email" :bails="false" #default="{ field, errors }">
+                <input
+                    type="email"
+                    class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300
+                    transition duration-500 focus:outline-none focus:border-black rounded"
+                    placeholder="Enter Email"
+                    v-bind="field"
+                >
+                <div class="text-red-600 text-xs" v-for="(error, index) in errors" :key="index">
+                  {{error}}
+                </div>
+              </VeeField>
             </div>
             <!-- Age -->
             <div class="mb-3">
               <label class="inline-block mb-2">Age</label>
-              <VeeField
-                  type="number"
-                  name="age"
-                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
-                  duration-500 focus:outline-none focus:border-black rounded"
-              />
-              <ErrorMessage name="age">
-                <p class="text-red-600">Age is not valid!</p>
-              </ErrorMessage>
+              <VeeField name="age" :bails="false" #default="{ field, errors }">
+                <input
+                    type="number"
+                    class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300
+                    transition duration-500 focus:outline-none focus:border-black rounded"
+                    v-bind="field"
+                >
+                <div class="text-red-600 text-xs" v-for="(error, index) in errors" :key="index">
+                  {{error}}
+                </div>
+              </VeeField>
             </div>
             <!-- Password -->
             <div class="mb-3">
               <label class="inline-block mb-2">Password</label>
-              <VeeField
-                  type="password"
-                  name="password"
-                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
-                  duration-500 focus:outline-none focus:border-black rounded"
-                  placeholder="Password"
-              />
-              <ErrorMessage name="password">
-                <p class="text-red-600">Password is not valid!</p>
-              </ErrorMessage>
+              <VeeField name="password" :bails="false" #default="{ field, errors }">
+                <input
+                    type="password"
+                    class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300
+                    transition duration-500 focus:outline-none focus:border-black rounded"
+                    placeholder="Password"
+                    v-bind="field"
+                >
+                <div class="text-red-600 text-xs" v-for="(error, index) in errors" :key="index">
+                  {{error}}
+                </div>
+              </VeeField>
             </div>
             <!-- Confirm Password -->
             <div class="mb-3">
               <label class="inline-block mb-2">Confirm Password</label>
-              <VeeField
-                  type="password"
-                  name="confirm_password"
-                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
-                  duration-500 focus:outline-none focus:border-black rounded"
-                  placeholder="Confirm Password"
-              />
-              <ErrorMessage name="confirm_password">
-                <p class="text-red-600">Passwords is not equals!</p>
-              </ErrorMessage>
+              <VeeField name="confirm_password" :bails="false" #default="{ field, errors }">
+                <input
+                    type="password"
+                    class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300
+                    transition duration-500 focus:outline-none focus:border-black rounded"
+                    placeholder="Confirm Password"
+                    v-bind="field"
+                >
+                <div class="text-red-600 text-xs" v-for="(error, index) in errors" :key="index">
+                  {{error}}
+                </div>
+              </VeeField>
             </div>
             <!-- Country -->
             <div class="mb-3">
               <label class="inline-block mb-2">Country</label>
-              <VeeField
-                  as="select"
-                  name="country"
-                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
-                  duration-500 focus:outline-none focus:border-black rounded"
-              >
-                <option value="USA">USA</option>
-                <option value="Mexico">Mexico</option>
-                <option value="Germany">Germany</option>
-                <option value="Excluded country">Excluded country</option>
+              <VeeField name="country" :bails="false" #default="{ field, errors }">
+                <select
+                    class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300
+                    transition duration-500 focus:outline-none focus:border-black rounded"
+                    v-bind="field">
+                  <option value="USA">USA</option>
+                  <option value="Mexico">Mexico</option>
+                  <option value="Germany">Germany</option>
+                  <option value="Excluded country">Excluded country</option>
+                </select>
+                <div class="text-red-600 text-xs" v-for="(error, index) in errors" :key="index">
+                  {{error}}
+                </div>
               </VeeField>
-              <ErrorMessage name="country">
-                <p class="text-red-600">Country is not valid!</p>
-              </ErrorMessage>
             </div>
             <!-- TOS -->
             <div class="mb-3 pl-6">
@@ -184,17 +209,14 @@
                   class="w-4 h-4 float-left -ml-6 mt-1 rounded"
               />
               <label class="inline-block">Accept terms of service</label>
-              <ErrorMessage name="tos" class="block">
-                <p class="text-red-600">Accept terms of service!</p>
-              </ErrorMessage>
+              <ErrorMessage name="tos" class="text-red-600 text-xs block"/>
             </div>
             <button
                 type="submit"
+                :disabled="regInSubmission"
                 class="block w-full bg-purple-600 text-white py-1.5 px-3 rounded transition
                 hover:bg-purple-700"
-            >
-              Submit
-            </button>
+            >Submit</button>
           </VeeForm>
         </div>
       </div>
@@ -203,7 +225,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { mapMutations } from 'vuex';
 
 export default {
   name: 'AuthModal',
@@ -215,20 +237,30 @@ export default {
         email: 'required|min:3|max:100|email',
         age: 'required|min_value:18|max_value:100|',
         password: 'required|min:3|max:100',
-        confirm_password: 'confirmed:@password',
-        country: 'required|excluded:Excluded country',
-        tos: 'required',
+        confirm_password: 'passwords_mismatch:@password',
+        country: 'required|country_excluded:Excluded country',
+        tos: 'tos',
       },
+      usedData: {
+        country: 'USA',
+      },
+      regInSubmission: false,
+      showRegAlert: false,
+      regAlertVariant: 'bg-blue-500',
+      regAlertMessage: 'Please wait! Your account is being created.',
     };
-  },
-  computed: {
-    ...mapState(['authModalShow']),
   },
   methods: {
     ...mapMutations(['toggleAuthModal']),
     register(formData) {
+      this.showRegAlert = true;
+      this.regInSubmission = true;
       if (formData) {
-        this.toggleAuthModal();
+        this.regAlertVariant = 'bg-green-500';
+        this.regAlertMessage = 'Success! Your account has been created.';
+        setTimeout(() => {
+          this.toggleAuthModal();
+        }, 2000);
       }
     },
   },
