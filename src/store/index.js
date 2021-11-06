@@ -9,7 +9,6 @@ import {
   updateProfile,
   createUserWithEmailAndPassword as createAccount,
   signInWithEmailAndPassword as signIn,
-  onAuthStateChanged,
 } from 'firebase/auth';
 
 const db = getFirestore();
@@ -30,11 +29,7 @@ export default createStore({
   },
   actions: {
     async initAuth({ commit }) {
-      onAuthStateChanged(auth, (user) => {
-        console.log('!!!!', user);
-        if (user) commit('toggleAuthState');
-        else commit('toggleAuthModalState');
-      });
+      if (auth.currentUser) commit('toggleAuthState');
     },
 
     async login({ commit }, data) {
