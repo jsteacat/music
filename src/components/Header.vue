@@ -10,7 +10,7 @@
         <ul class="flex flex-row mt-1">
           <!-- Navigation Links -->
           <li>
-            <a class="px-2 text-white" href="#" @click.prevent="toggleAuthModal">
+            <a class="px-2 text-white" href="#" @click.prevent="toggleAuthModalState">
               Login / Register
             </a>
           </li>
@@ -26,11 +26,20 @@
 
 <script>
 import { mapMutations } from 'vuex';
+import { getAuth, signOut } from 'firebase/auth';
 
 export default {
   name: 'AppHeader',
   methods: {
-    ...mapMutations(['toggleAuthModal']),
+    ...mapMutations(['toggleAuthModalState']),
+    logout() {
+      const auth = getAuth();
+      signOut(auth).then(() => {
+        // Sign-out successful.
+      }).catch((error) => {
+        console.log(error);
+      });
+    },
   },
 };
 </script>
