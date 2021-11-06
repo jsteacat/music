@@ -52,16 +52,13 @@
 </template>
 
 <script>
-// eslint-disable-next-line import/named
-import { auth, signIn } from '../includes/firebase';
-
 export default {
   name: 'LoginForm',
   data() {
     return {
       loginSchema: {
         email: 'required|email',
-        password: 'required|min:3|max:32',
+        password: 'required|min:6|max:32',
       },
       loginInSubmission: false,
       showLoginAlert: false,
@@ -70,25 +67,22 @@ export default {
     };
   },
   methods: {
-    login(formData) {
+    async login(formData) {
       if (formData) {
         this.showLoginAlert = true;
         this.loginInSubmission = true;
         this.loginAlertVariant = 'bg-blue-500';
         this.loginAlertMessage = 'Please wait! We are logging you in.';
 
-        signIn(auth, formData.email, formData.password)
-          .then((userCredential) => {
-            this.loginAlertVariant = 'bg-green-500';
-            this.loginAlertMessage = 'Success! You are logged in.';
-            console.log(userCredential.user);
-          })
-          .catch((error) => {
-            this.loginInSubmission = false;
-            this.loginAlertVariant = 'bg-red-500';
-            this.loginAlertMessage = error.message;
-            console.log('error', error.code, error.message);
-          });
+        try {
+          await this.$store.dispatch('login', formData);
+          this.loginAlertVariant = 'bg-green-500';
+          this.loginAlertMessage = 'Success! You are logged in.';
+        } catch (e) {
+          this.loginInSubmission = false;
+          this.loginAlertVariant = 'bg-red-500';
+          this.loginAlertMessage = e.message;
+        }
       }
     },
   },

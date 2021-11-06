@@ -1,7 +1,19 @@
 import { createStore } from 'vuex';
 import {
-  add, auth, createUser, usersCollection,
-} from '../includes/firebase';
+  getFirestore,
+  setDoc,
+  doc,
+} from 'firebase/firestore';
+import {
+  getAuth,
+  updateProfile,
+  createUserWithEmailAndPassword as createAccount,
+  signInWithEmailAndPassword as signIn,
+  onAuthStateChanged,
+} from 'firebase/auth';
+
+const db = getFirestore();
+const auth = getAuth();
 
 export default createStore({
   state: {
@@ -17,19 +29,36 @@ export default createStore({
     },
   },
   actions: {
+    async initAuth({ commit }) {
+      onAuthStateChanged(auth, (user) => {
+        console.log('!!!!', user);
+        if (user) commit('toggleAuthState');
+        else commit('toggleAuthModalState');
+      });
+    },
+
+    async login({ commit }, data) {
+      await signIn(auth, data.email, data.password);
+      commit('toggleAuthState');
+    },
+
     async register({ commit }, data) {
-      try {
-        const {
-          name, email, age, password, country,
-        } = data;
-        await createUser(auth, email, password);
-        await add(usersCollection, {
-          name, email, age, country,
-        });
-        commit('toggleAuthState');
-      } catch (e) {
-        console.log(e);
-      }
+      const {
+        name, email, age, password, country,
+      } = data;
+
+      const userCredentials = await createAccount(auth, email, password);
+
+      // create user
+      await setDoc(doc(db, 'users', userCredentials.user.uid), {
+        name, email, age, country,
+      });
+
+      await updateProfile(userCredentials.user, {
+        displayName: name,
+      });
+
+      commit('toggleAuthState');
     },
   },
   modules: {

@@ -316,7 +316,8 @@ export default {
     AppHeader,
     AuthModal,
   },
+  async created() {
+    await this.$store.dispatch('initAuth');
+  },
 };
 </script>
-
-<style lang="sass"></style>
