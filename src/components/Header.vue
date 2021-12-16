@@ -46,8 +46,10 @@ export default {
     logout() {
       const auth = getAuth();
       signOut(auth).then(() => {
-        this.toggleAuthState();
-        this.$router.push({ name: 'home' });
+        this.toggleAuthState({
+          router: this.$router,
+          route: this.$route,
+        });
       }).catch((error) => {
         console.log(error);
       });

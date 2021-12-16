@@ -23,8 +23,11 @@ export default createStore({
     toggleAuthModalState: (state) => {
       state.authModalShow = !state.authModalShow;
     },
-    toggleAuthState: (state) => {
+    toggleAuthState: (state, payload) => {
       state.isAuth = !state.isAuth;
+      if (!state.isAuth && payload.route.meta.requiresAuth) {
+        payload.router.push({ name: 'home' });
+      }
     },
   },
   actions: {

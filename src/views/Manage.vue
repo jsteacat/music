@@ -136,13 +136,8 @@
 </template>
 
 <script>
-import store from '../store';
 
 export default {
   name: 'manage-page',
-  beforeRouteEnter(to, from, next) {
-    if (store.state.isAuth) next();
-    else next({ name: 'home' });
-  },
 };
 </script>

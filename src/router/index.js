@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import store from '../store';
 
 const routes = [
   {
@@ -9,6 +10,9 @@ const routes = [
   {
     path: '/manage-music',
     name: 'manage',
+    meta: {
+      requiresAuth: true,
+    },
     component: () => import(/* webpackChunkName: "manage" */ '../views/Manage.vue'),
     beforeEnter: (to, from, next) => {
       console.log(to, from);
@@ -33,8 +37,16 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  console.log(to, from);
-  next();
+  if (!to.matched.some((record) => record.meta.requiresAuth)) {
+    next();
+    return;
+  }
+
+  if (store.state.isAuth) {
+    next();
+  } else {
+    next({ name: 'home' });
+  }
 });
 
 export default router;
