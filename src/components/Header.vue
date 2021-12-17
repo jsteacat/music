@@ -51,7 +51,7 @@ export default {
           route: this.$route,
         });
       }).catch((error) => {
-        console.log(error);
+        console.warn(error);
       });
     },
   },
