@@ -42,10 +42,11 @@ import { getAuth, signOut } from 'firebase/auth';
 export default {
   name: 'AppHeader',
   methods: {
-    ...mapMutations(['toggleAuthModalState', 'toggleAuthState']),
+    ...mapMutations(['toggleAuthModalState', 'toggleAuthState', 'setCurrentUser']),
     logout() {
       const auth = getAuth();
       signOut(auth).then(() => {
+        this.setCurrentUser(null);
         this.toggleAuthState({
           router: this.$router,
           route: this.$route,

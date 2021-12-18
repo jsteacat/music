@@ -10,8 +10,7 @@ import './assets/main.css';
 
 let app;
 
-onAuthStateChanged(getAuth(), (user) => {
-  console.log('user?', user);
+onAuthStateChanged(getAuth(), () => {
   if (!app) {
     app = createApp(App);
     app.use(store);

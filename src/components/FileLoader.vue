@@ -22,24 +22,17 @@
       </div>
       <hr class="my-6" />
       <!-- Progess Bars -->
-      <div class="mb-4">
+      <div v-for="(upload, index) in uploads" :key="index" class="mb-4">
         <!-- File Name -->
-        <div class="font-bold text-sm">Just another song.mp3</div>
+        <div :class="upload.textClass" class="font-bold text-sm">
+          <i :class="upload.icon"></i> {{ upload.name }}
+        </div>
         <div class="flex h-4 overflow-hidden bg-gray-200 rounded">
           <!-- Inner Progress Bar -->
-          <div class="transition-all progress-bar bg-blue-400" style="width: 75%"></div>
-        </div>
-      </div>
-      <div class="mb-4">
-        <div class="font-bold text-sm">Just another song.mp3</div>
-        <div class="flex h-4 overflow-hidden bg-gray-200 rounded">
-          <div class="transition-all progress-bar bg-blue-400" style="width: 35%"></div>
-        </div>
-      </div>
-      <div class="mb-4">
-        <div class="font-bold text-sm">Just another song.mp3</div>
-        <div class="flex h-4 overflow-hidden bg-gray-200 rounded">
-          <div class="transition-all progress-bar bg-blue-400" style="width: 55%"></div>
+          <div
+              :style="{ width: upload.progress + '%' }"
+              :class="upload.variant"
+              class="transition-all progress-bar"/>
         </div>
       </div>
     </div>
@@ -48,7 +41,7 @@
 
 <script>
 import {
-  getStorage, ref, uploadBytesResumable, getDownloadURL,
+  getDownloadURL, getStorage, ref, uploadBytesResumable,
 } from 'firebase/storage';
 
 const storage = getStorage();
@@ -62,6 +55,7 @@ export default {
   data() {
     return {
       isDragover: false,
+      uploads: [],
     };
   },
   methods: {
@@ -69,33 +63,49 @@ export default {
       this.isDragover = false;
       const files = [...evt.dataTransfer.files];
       files.forEach((file) => {
-        console.log(file);
         if (file.type === 'audio/mpeg') {
           const singleRef = ref(folderRef, file.name);
-          const uploadTask = uploadBytesResumable(singleRef, file);
+          const task = uploadBytesResumable(singleRef, file);
 
-          uploadTask.on('state_changed', (snapshot) => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log(`Upload is ${Math.round(progress)} % done`);
-            // eslint-disable-next-line default-case
-            switch (snapshot.state) {
-              case 'paused':
-                console.log('Upload is paused');
-                break;
-              case 'running':
-                console.log('Upload is running');
-                break;
-            }
+          const uploadIndex = this.uploads.push({
+            task,
+            progress: 0,
+            name: file.name,
+            variant: 'bg-blue-400',
+            icon: 'fas fa-spinner fa-spin',
+            textClass: '',
+          }) - 1;
+
+          task.on('state_changed', (snapshot) => {
+            this.uploads[uploadIndex].progress = Math.round(
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100,
+            );
           },
           (error) => {
             // Handle unsuccessful uploads
             console.warn(error);
+            this.uploads[uploadIndex].variant = 'bg-red-400';
+            this.uploads[uploadIndex].icon = 'fas fa-times';
+            this.uploads[uploadIndex].textClass = 'text-red-400';
           },
-          () => {
+          async () => {
             // Handle successful uploads on complete
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              console.log('File available at', downloadURL);
-            });
+            this.uploads[uploadIndex].variant = 'bg-green-400';
+            this.uploads[uploadIndex].icon = 'fas fa-check';
+            this.uploads[uploadIndex].textClass = 'text-green-400';
+
+            const { uid, displayName } = this.$store.state.user;
+            const song = {
+              uid,
+              displayName,
+              originalName: task.snapshot.ref.name,
+              modifiedName: task.snapshot.ref.name,
+              genre: '',
+              commentCount: 0,
+            };
+
+            song.url = await getDownloadURL(task.snapshot.ref);
+            await this.$store.dispatch('createSong', song);
           });
         }
       });

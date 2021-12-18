@@ -2,7 +2,9 @@ import { createStore } from 'vuex';
 import {
   getFirestore,
   setDoc,
+  addDoc,
   doc,
+  collection,
 } from 'firebase/firestore';
 import {
   getAuth,
@@ -18,6 +20,8 @@ export default createStore({
   state: {
     authModalShow: false,
     isAuth: false,
+    user: null,
+    songs: [],
   },
   mutations: {
     toggleAuthModalState: (state) => {
@@ -29,15 +33,25 @@ export default createStore({
         payload.router.push({ name: 'home' });
       }
     },
+    setCurrentUser: (state, payload) => {
+      state.user = payload;
+    },
+    addSong: (state, payload) => {
+      state.songs.push(payload);
+    },
   },
   actions: {
     async initAuth({ commit }) {
-      if (auth.currentUser) commit('toggleAuthState');
+      if (auth.currentUser) {
+        commit('toggleAuthState');
+        commit('setCurrentUser', auth.currentUser);
+      }
     },
 
     async login({ commit }, data) {
       await signIn(auth, data.email, data.password);
       commit('toggleAuthState');
+      commit('setCurrentUser', auth.currentUser);
     },
 
     async register({ commit }, data) {
@@ -57,6 +71,11 @@ export default createStore({
       });
 
       commit('toggleAuthState');
+      commit('setCurrentUser', auth.currentUser);
+    },
+    async createSong({ commit }, data) {
+      await addDoc(collection(db, 'songs'), data);
+      commit('addSong', data);
     },
   },
   modules: {
