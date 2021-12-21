@@ -3,7 +3,7 @@
   <section class="container mx-auto mt-6">
     <div class="md:grid md:grid-cols-3 md:gap-4">
       <div class="col-span-1">
-        <FileLoader />
+        <FileLoader ref="upload" />
       </div>
       <div class="col-span-2">
         <div class="bg-white rounded border border-gray-200 relative flex flex-col">
@@ -104,6 +104,10 @@ import FileLoader from '../components/FileLoader.vue';
 
 export default {
   name: 'manage-page',
+  // beforeRouteLeave(to, from, next) {
+  //   this.$refs.upload.cancelUploads();
+  //   next();
+  // },
   components: {
     FileLoader,
   },

@@ -20,6 +20,7 @@
       >
         <h5>Drop your files here</h5>
       </div>
+      <input type="file" multiple @change="upload($event)" />
       <hr class="my-6" />
       <!-- Progess Bars -->
       <div v-for="(upload, index) in uploads" :key="index" class="mb-4">
@@ -61,7 +62,8 @@ export default {
   methods: {
     upload(evt) {
       this.isDragover = false;
-      const files = [...evt.dataTransfer.files];
+      const files = evt.dataTransfer ? [...evt.dataTransfer.files] : [...evt.target.files];
+
       files.forEach((file) => {
         if (file.type === 'audio/mpeg') {
           const singleRef = ref(folderRef, file.name);
@@ -110,6 +112,14 @@ export default {
         }
       });
     },
+    cancelUploads() {
+      this.uploads.forEach((upload) => {
+        upload.task.cancel();
+      });
+    },
+  },
+  beforeUnmount() {
+    this.cancelUploads();
   },
 };
 </script>

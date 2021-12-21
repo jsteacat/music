@@ -73,6 +73,7 @@ export default createStore({
       commit('toggleAuthState');
       commit('setCurrentUser', auth.currentUser);
     },
+
     async createSong({ commit }, data) {
       await addDoc(collection(db, 'songs'), data);
       commit('addSong', data);
