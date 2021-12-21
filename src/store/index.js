@@ -3,8 +3,11 @@ import {
   getFirestore,
   setDoc,
   addDoc,
+  getDocs,
   doc,
   collection,
+  query,
+  where,
 } from 'firebase/firestore';
 import {
   getAuth,
@@ -37,7 +40,10 @@ export default createStore({
       state.user = payload;
     },
     addSong: (state, payload) => {
-      state.songs.push(payload);
+      state.songs.unshift(payload);
+    },
+    setSongList: (state, payload) => {
+      state.songs = payload;
     },
   },
   actions: {
@@ -75,8 +81,18 @@ export default createStore({
     },
 
     async createSong({ commit }, data) {
-      await addDoc(collection(db, 'songs'), data);
-      commit('addSong', data);
+      const songRef = await addDoc(collection(db, 'songs'), data);
+      commit('addSong', { ...data, id: songRef.id });
+    },
+
+    async getSongList({ commit, state }) {
+      const list = [];
+      const snapshot = await getDocs(query(collection(db, 'songs'), where('uid', '==', state.user.uid)));
+      snapshot.forEach((item) => {
+        list.push({ ...item.data(), id: item.id });
+      });
+      commit('setSongList', list);
+      return list;
     },
   },
   modules: {
