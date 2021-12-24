@@ -3,6 +3,7 @@ import {
   getFirestore,
   setDoc,
   addDoc,
+  updateDoc,
   getDocs,
   doc,
   collection,
@@ -30,18 +31,31 @@ export default createStore({
     toggleAuthModalState: (state) => {
       state.authModalShow = !state.authModalShow;
     },
+
     toggleAuthState: (state, payload) => {
       state.isAuth = !state.isAuth;
       if (!state.isAuth && payload.route.meta.requiresAuth) {
         payload.router.push({ name: 'home' });
       }
     },
+
     setCurrentUser: (state, payload) => {
       state.user = payload;
     },
+
     addSong: (state, payload) => {
       state.songs.unshift(payload);
     },
+
+    editSong: (state, payload) => {
+      const { modifiedName, genre, id } = payload;
+      const index = state.songs.findIndex((song) => song.id === id);
+
+      if (index !== -1) {
+        state.songs[index] = { ...state.songs[index], modifiedName, genre };
+      }
+    },
+
     setSongList: (state, payload) => {
       state.songs = payload;
     },
@@ -83,6 +97,14 @@ export default createStore({
     async createSong({ commit }, data) {
       const songRef = await addDoc(collection(db, 'songs'), data);
       commit('addSong', { ...data, id: songRef.id });
+    },
+
+    async editSong({ commit }, data) {
+      const { modifiedName, genre, id } = data;
+      const songRef = doc(db, 'songs', id);
+
+      await updateDoc(songRef, { modifiedName, genre });
+      commit('editSong', data);
     },
 
     async getSongList({ commit, state }) {

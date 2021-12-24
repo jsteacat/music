@@ -1,6 +1,9 @@
 <template>
   <div class="song-item border border-gray-200 p-3 mb-4 rounded">
     <div v-show="showForm">
+      <div v-if="showAlert" :class="['text-white text-center font-bold p-4 mb-4', alert.variant]">
+        {{ alert.message }}
+      </div>
       <VeeForm :validation-schema="formSchema" :initial-values="item" @submit="save">
         <div class="mb-3">
           <label class="inline-block mb-2">Song Title</label>
@@ -30,12 +33,17 @@
             </div>
           </VeeField>
         </div>
-        <button type="submit" class="py-1.5 px-3 rounded text-white bg-green-600">
+        <button
+            type="submit"
+            class="py-1.5 px-3 rounded text-white bg-green-600"
+            :disabled="inSubmission"
+        >
           Submit
         </button>
         <button
             type="button"
             class="py-1.5 px-3 rounded text-white bg-gray-600"
+            :disabled="inSubmission"
             @click.prevent="showForm = false"
         >
           Go Back
@@ -73,12 +81,38 @@ export default {
         genre: 'alpha_spaces',
       },
       showForm: false,
+      inSubmission: false,
+      showAlert: false,
+      alert: {
+        variant: 'bg-blue-500',
+        message: 'Please wait! Updating song info.',
+      },
     };
   },
   methods: {
     async save(formData) {
-      console.log(formData);
-      this.showForm = false;
+      this.inSubmission = true;
+      this.showAlert = true;
+      this.alert = {
+        variant: 'bg-blue-500',
+        message: 'Please wait! Updating song info.',
+      };
+
+      try {
+        await this.$store.dispatch('editSong', { ...formData, id: this.item.id });
+        this.alert = {
+          variant: 'bg-green-500',
+          message: 'Success!',
+        };
+        this.inSubmission = false;
+        this.showAlert = false;
+      } catch (e) {
+        this.inSubmission = false;
+        this.alert = {
+          variant: 'bg-red-500',
+          message: e.message,
+        };
+      }
     },
   },
 };
