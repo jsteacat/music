@@ -77,6 +77,7 @@ export default {
       required: true,
     },
   },
+
   data() {
     return {
       formSchema: {
@@ -92,6 +93,7 @@ export default {
       },
     };
   },
+
   methods: {
     async save(formData) {
       this.inSubmission = true;

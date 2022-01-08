@@ -22,6 +22,7 @@ const db = getFirestore();
 const auth = getAuth();
 
 export default createStore({
+  strict: process.env.NODE_ENV !== 'production',
   state: {
     authModalShow: false,
     isAuth: false,

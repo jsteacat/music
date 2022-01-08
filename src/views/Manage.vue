@@ -3,7 +3,11 @@
   <section class="container mx-auto mt-6">
     <div class="md:grid md:grid-cols-3 md:gap-4">
       <div class="col-span-1">
-        <FileLoader ref="upload" :uploads="uploads" @upload="upload"/>
+        <FileLoader
+            ref="upload"
+            :uploads="uploads"
+            @upload="uploadToStorage"
+        />
       </div>
       <div class="col-span-2">
         <div class="bg-white rounded border border-gray-200 relative flex flex-col">
@@ -41,12 +45,19 @@ export default {
   name: 'manage-page',
   data() {
     return {
-      songs: [],
       uploads: [],
     };
   },
+
+  computed: {
+    songs() {
+      // ради одного нет смысла тащить сюда mapState
+      return this.$store.state.songs;
+    },
+  },
+
   methods: {
-    upload(evt) {
+    uploadToStorage(evt) {
       this.uploads = [];
       const files = evt.dataTransfer ? [...evt.dataTransfer.files] : [...evt.target.files];
 
@@ -103,15 +114,15 @@ export default {
       const desertRef = ref(storage, item.url);
 
       deleteObject(desertRef).then(() => {
-        this.songs = this.songs.filter((song) => song.id !== item.id);
+        console.log('The file has been successfully deleted from the storage!');
       }).catch((error) => {
         console.warn(error);
       });
     },
   },
+
   async created() {
-    // вынести в computed
-    this.songs = await this.$store.dispatch('getSongList');
+    await this.$store.dispatch('getSongList');
   },
   components: {
     FileLoader,
