@@ -4,7 +4,7 @@
       <div v-if="showAlert" :class="['text-white text-center font-bold p-4 mb-4', alert.variant]">
         {{ alert.message }}
       </div>
-      <VeeForm :validation-schema="formSchema" :initial-values="item" @submit="save">
+      <VeeForm :validation-schema="formSchema" :initial-values="form" @submit="save">
         <div class="mb-3">
           <label class="inline-block mb-2">Song Title</label>
           <VeeField name="modifiedName" :bails="false" #default="{ field, errors }">
@@ -80,6 +80,7 @@ export default {
 
   data() {
     return {
+      form: null,
       formSchema: {
         modifiedName: 'required',
         genre: 'alpha_spaces',
@@ -123,6 +124,10 @@ export default {
       await this.$store.dispatch('removeSong', this.item.id);
       this.$emit('remove', this.item);
     },
+  },
+
+  created() {
+    this.form = { ...this.item };
   },
 };
 </script>
