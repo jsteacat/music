@@ -52,7 +52,10 @@
     </div>
     <div v-show="!showForm">
       <h4 class="inline-block text-2xl font-bold">{{ item.modifiedName }}</h4>
-      <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right">
+      <button
+          class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right"
+          @click.prevent="remove"
+      >
         <i class="fa fa-times"></i>
       </button>
       <button
@@ -113,6 +116,10 @@ export default {
           message: e.message,
         };
       }
+    },
+    async remove() {
+      await this.$store.dispatch('removeSong', this.item.id);
+      this.$emit('remove', this.item);
     },
   },
 };

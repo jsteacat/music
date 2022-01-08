@@ -4,6 +4,7 @@ import {
   setDoc,
   addDoc,
   updateDoc,
+  deleteDoc,
   getDocs,
   doc,
   collection,
@@ -56,6 +57,10 @@ export default createStore({
       }
     },
 
+    removeSong: (state, id) => {
+      state.songs = state.songs.filter((song) => song.id !== id);
+    },
+
     setSongList: (state, payload) => {
       state.songs = payload;
     },
@@ -105,6 +110,13 @@ export default createStore({
 
       await updateDoc(songRef, { modifiedName, genre });
       commit('editSong', data);
+    },
+
+    async removeSong({ commit }, id) {
+      const songRef = doc(db, 'songs', id);
+
+      await deleteDoc(songRef);
+      commit('removeSong', id);
     },
 
     async getSongList({ commit, state }) {
