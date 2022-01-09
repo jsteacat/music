@@ -54,8 +54,7 @@ export default {
 
   data() {
     return {
-      page: 1,
-      limit: 2,
+      isAll: false,
     };
   },
 
@@ -68,6 +67,9 @@ export default {
 
   methods: {
     handleScroll() {
+      // если в последний раз пришло меньше, чем limit,
+      // значит подгрузились уже все - костыль для firebase
+      if (this.isAll) return;
       const { scrollTop, offsetHeight } = document.documentElement;
       const { innerHeight } = window;
       const bottomOfWindow = Math.round(scrollTop) + innerHeight === offsetHeight;
@@ -78,12 +80,13 @@ export default {
     },
 
     async getSongs() {
-      const { page, limit } = this;
-      await this.$store.dispatch('getSongList', { page, limit });
+      const list = await this.$store.dispatch('getSongList', { limit: this.limit });
+      this.isAll = list.length < this.limit;
     },
   },
 
   async created() {
+    this.limit = 10; // not reactive
     await this.getSongs();
 
     window.addEventListener('scroll', this.handleScroll);
