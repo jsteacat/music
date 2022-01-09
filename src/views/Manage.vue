@@ -17,7 +17,7 @@
           </div>
           <div class="p-6">
             <!-- Composition Items -->
-            <SongItem
+            <CompositionItem
                 v-for="song in songs"
                 :key="song.id"
                 :item="song"
@@ -35,7 +35,7 @@ import {
   getDownloadURL, getStorage, ref, uploadBytesResumable, deleteObject,
 } from 'firebase/storage';
 import FileLoader from '../components/FileLoader.vue';
-import SongItem from '../components/SongItem.vue';
+import CompositionItem from '../components/CompositionItem.vue';
 
 const storage = getStorage();
 const storageRef = ref(storage);
@@ -126,7 +126,7 @@ export default {
   },
   components: {
     FileLoader,
-    SongItem,
+    CompositionItem,
   },
 };
 </script>

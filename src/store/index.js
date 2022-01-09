@@ -7,9 +7,12 @@ import {
   deleteDoc,
   getDocs,
   doc,
+  getDoc,
   collection,
   query,
   where,
+  limit,
+  startAfter,
 } from 'firebase/firestore';
 import {
   getAuth,
@@ -63,7 +66,7 @@ export default createStore({
     },
 
     setSongList: (state, payload) => {
-      state.songs = payload;
+      state.songs = state.songs.concat(payload);
     },
   },
   actions: {
@@ -120,12 +123,33 @@ export default createStore({
       commit('removeSong', id);
     },
 
-    async getSongList({ commit, state }) {
+    async getSongList({ commit, state }, data) {
       const list = [];
-      const snapshot = await getDocs(query(collection(db, 'songs'), where('uid', '==', state.user.uid)));
-      snapshot.forEach((item) => {
+      let snapshots;
+
+      if (!state.songs.length) {
+        const first = query(collection(db, 'songs'),
+          where('uid', '==', state.user.uid),
+          limit(data.limit));
+
+        snapshots = await getDocs(first);
+      }
+
+      if (state.songs.length) {
+        const docRef = doc(db, 'songs', state.songs[state.songs.length - 1].id);
+        const docSnap = await getDoc(docRef);
+        const next = query(collection(db, 'songs'),
+          where('uid', '==', state.user.uid),
+          startAfter(docSnap),
+          limit(data.limit));
+
+        snapshots = await getDocs(next);
+      }
+
+      snapshots.forEach((item) => {
         list.push({ ...item.data(), id: item.id });
       });
+      console.log('setSongList', list);
       commit('setSongList', list);
       return list;
     },
