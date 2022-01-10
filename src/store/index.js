@@ -149,9 +149,15 @@ export default createStore({
       snapshots.forEach((item) => {
         list.push({ ...item.data(), id: item.id });
       });
-      console.log('setSongList', list);
       commit('setSongList', list);
       return list;
+    },
+
+    // eslint-disable-next-line no-empty-pattern
+    async getSongById({}, id) {
+      const songRef = doc(db, 'songs', id);
+      const songSnap = await getDoc(songRef);
+      return songSnap.data();
     },
   },
   modules: {

@@ -1,8 +1,11 @@
 <template>
   <div>
-    <a :href="song.url" class="font-bold block text-gray-600" target="_blank">
+    <router-link
+        :to="{ name: 'song', params: { id: song.id } }"
+        class="font-bold block text-gray-600"
+    >
       {{ song.modifiedName }}
-    </a>
+    </router-link>
 <!--    <span class="text-gray-500 text-sm">{{ song.displayName }}</span>-->
   </div>
 
