@@ -159,6 +159,29 @@ export default createStore({
       const songSnap = await getDoc(songRef);
       return songSnap.data();
     },
+
+    // eslint-disable-next-line no-empty-pattern
+    async addComment({}, data) {
+      const commentRef = await addDoc(collection(db, 'comments'), {
+        ...data,
+        author: auth.currentUser.displayName,
+        uid: auth.currentUser.uid,
+      });
+      const commentSnap = await getDoc(commentRef);
+      return commentSnap.data();
+    },
+
+    // eslint-disable-next-line no-empty-pattern
+    async getCommentsBySid({}, sid) {
+      const resp = query(collection(db, 'comments'), where('sid', '==', sid));
+      const snapshots = await getDocs(resp);
+
+      const list = [];
+      snapshots.forEach((item) => {
+        list.push({ ...item.data() });
+      });
+      return list;
+    },
   },
   modules: {
   },
